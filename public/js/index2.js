@@ -1,11 +1,7 @@
-$(".heading-compose").click(function() {
-    $(".side-two").css({
-      "left": "0"
-    });
-  });
-
-  $(".newMessage-back").click(function() {
-    $(".side-two").css({
-      "left": "-100%"
-    });
-  });
+window.onload = () => {
+  if ($("#error").text() != "##err##") {
+    $("#error").show();
+  } else {
+    $("#error").hide();
+  }
+}
