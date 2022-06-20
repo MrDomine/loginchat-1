@@ -8,7 +8,6 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const { isModuleNamespaceObject } = require('util/types');
 const io = new Server(server);
 
 var usuarioOnline = [];
@@ -27,7 +26,15 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use('/', express.static(__dirname + '/public'));
 
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/public/views/login.html");
+    if (req.session && req.session.user) {
+        fs.readFile(__dirname + "/index2.html", (err, data) => {
+            data = data.toString().trim().replace("{{user}}", req.session.user.nombre).replace("{{img}}", `img/${req.session.user.imagen == null ? 'default' : req.session.user.imagen}.jpg`);
+            res.send(data);
+        })
+    } else {
+        res.sendFile(__dirname + "/public/views/login.html");
+    }
+
 })
 app.get('/chat', function (req, res) {
     res.sendFile(__dirname + "/index2.html");
@@ -48,9 +55,9 @@ app.post("/", (req, res) => {
         } else {
             if (results.rowCount > 0) {
                 req.session.user = results.rows[0];
-                usuarioOnline.push({nombre:req.session.user.nombre,imagen:req.session.user.imagen});
+                usuarioOnline.push({ nombre: req.session.user.nombre, imagen: req.session.user.imagen });
                 fs.readFile(__dirname + "/index2.html", (err, data) => {
-                    data = data.toString().trim().replace("{{user}}", req.session.user.nombre).replace("{{img}}",`img/${req.session.user.imagen==null?'default':req.session.user.imagen}.jpg`);
+                    data = data.toString().trim().replace("{{user}}", req.session.user.nombre).replace("{{img}}", `img/${req.session.user.imagen == null ? 'default' : req.session.user.imagen}.jpg`);
                     res.send(data);
                 })
             } else {
@@ -64,7 +71,7 @@ app.post("/", (req, res) => {
         conexion.con.end();
     });
 })
-app.get("/desconectar",(req,res)=>{
+app.get("/desconectar", (req, res) => {
     req.session.destroy();
     res.redirect("/");
 })
@@ -119,13 +126,13 @@ io.on('connection', (socket) => {
         console.log(reason);
         let mensaje = socket.request.session.user.nombre + ":" + reason
         let usuario = socket.request.session.user.nombre;
-        for(let i = 0; i < usuarioOnline.length; i++){
-            if(usuarioOnline[i].nombre==usuario){
-                usuarioOnline.splice(i,1);
+        for (let i = 0; i < usuarioOnline.length; i++) {
+            if (usuarioOnline[i].nombre == usuario) {
+                usuarioOnline.splice(i, 1);
             }
         }
         io.emit("usuarios", usuarioOnline);
-        io.emit("chat", {from:usuario,message:reason});
+        io.emit("chat", { from: usuario, message: reason });
 
     });
 
@@ -145,7 +152,7 @@ function base64_encode(file) {
     return "data:image/jpg;base64," + fs.readFileSync(file, 'base64');
 }
 
-const PORT= process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, (err) => {
     console.log(`Servidor iniciado en ${PORT}`);
 });
