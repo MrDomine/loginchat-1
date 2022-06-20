@@ -1,14 +1,17 @@
-const mysql = require('mysql');
+//const mysql = require('mysql');
+const {Client} = require('pg');
+
 class Conexion {
     constructor() {
-
-        this.con = mysql.createConnection({
-            host: "ec2-52-22-136-117.compute-1.amazonaws.com",
-            user: "bqdadughsjsqod",
-            database:"d1ign1h9o3fuv5",
-            password: "7b6e288a9259c080aeb5d2890149d127efb5cd8b9b576c699edfdce2336a397c",
+        this.con = new Client({
+            user: "stwiovomovfdkc",
+            host: "ec2-52-49-120-150.eu-west-1.compute.amazonaws.com",
+            database:"daksclnbfta14d",
+            password: "13b9d4a7eacb173ff10699a968bc5e42dfb4a4c820e2830568b3700328066b9a",
             port: 5432
-        });
+        })
+
+        this.con.connect();
 
         this.con.connect(function (err) {
 

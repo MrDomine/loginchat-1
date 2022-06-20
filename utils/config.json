@@ -1,18 +1,14 @@
-Please note that these credentials are not permanent.
-
-Heroku rotates credentials periodically and updates applications where this database is attached.
-
 Host
-ec2-52-22-136-117.compute-1.amazonaws.com
+ec2-52-49-120-150.eu-west-1.compute.amazonaws.com
 Database
-d1ign1h9o3fuv5
+daksclnbfta14d
 User
-bqdadughsjsqod
+stwiovomovfdkc
 Port
 5432
 Password
-7b6e288a9259c080aeb5d2890149d127efb5cd8b9b576c699edfdce2336a397c
+13b9d4a7eacb173ff10699a968bc5e42dfb4a4c820e2830568b3700328066b9a
 URI
-postgres://bqdadughsjsqod:7b6e288a9259c080aeb5d2890149d127efb5cd8b9b576c699edfdce2336a397c@ec2-52-22-136-117.compute-1.amazonaws.com:5432/d1ign1h9o3fuv5
+postgres://stwiovomovfdkc:13b9d4a7eacb173ff10699a968bc5e42dfb4a4c820e2830568b3700328066b9a@ec2-52-49-120-150.eu-west-1.compute.amazonaws.com:5432/daksclnbfta14d
 Heroku CLI
-heroku pg:psql postgresql-fitted-75323 --app app-login-chat
+heroku pg:psql postgresql-octagonal-49883 --app loginchatonline
