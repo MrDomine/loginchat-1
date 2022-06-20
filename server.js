@@ -37,7 +37,7 @@ app.post("/", (req, res) => {
     let conexion = new Conexion();
     let pass = crypto.createHash('md5').update(req.body.password).digest("hex")
 
-    let consulta = "select * from cliente where username=? and password=?";
+    let consulta = "select * from usuarios where username=$1 and password=$2";
     conexion.con.query(consulta, [req.body.username, pass], (error, results, fields) => {
         if (error) {
             fs.readFile("./public/views/login.html", (err, data) => {
@@ -46,8 +46,8 @@ app.post("/", (req, res) => {
                 return;
             })
         } else {
-            if (results.length > 0) {
-                req.session.user = results[0];
+            if (results.rowCount > 0) {
+                req.session.user = results.rows[0];
                 usuarioOnline.push({nombre:req.session.user.nombre,imagen:req.session.user.imagen});
                 fs.readFile(__dirname + "/index2.html", (err, data) => {
                     data = data.toString().trim().replace("{{user}}", req.session.user.nombre).replace("{{img}}",`img/${req.session.user.imagen==null?'default':req.session.user.imagen}.jpg`);
