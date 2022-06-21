@@ -107,8 +107,9 @@ app.post("/registro", (req, res) => {
     })
 
     EDFile.mv(`./public/img/${EDFile.name}.jpg`, err => {
-        if(err) return res.status(500).send({message : err})
+        if (err) return res.status(500).send({ message: err })
     })
+    conexion.con.end();
 })
 
 app.get("/desconectar", (req, res) => {
@@ -175,15 +176,6 @@ io.on('connection', (socket) => {
         io.emit("chat", { from: usuario, message: reason });
 
     });
-
-    /*
-        contador=0;
-        setInterval(()=>{
-            let datos=base64_encode(__dirname+"/public/img/5.jpg");
-            io.emit("Juan","hola juan")
-            console.log("hola Juan");
-        },3000)
-        */
 
 
 });
