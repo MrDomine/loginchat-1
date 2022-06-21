@@ -5,6 +5,7 @@ const bodyparser = require("body-parser");
 const Conexion = require("./utils/db");
 session = require('express-session');
 const app = express();
+const fileUpload = require("express-fileupload");
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -25,6 +26,8 @@ app.use(bodyparser.urlencoded({ extended: true }));
 
 app.use('/', express.static(__dirname + '/public'));
 
+app.use(fileUpload());
+
 app.get('/', function (req, res) {
     if (req.session && req.session.user) {
         fs.readFile(__dirname + "/index2.html", (err, data) => {
@@ -38,6 +41,10 @@ app.get('/', function (req, res) {
 })
 app.get('/chat', function (req, res) {
     res.sendFile(__dirname + "/index2.html");
+})
+
+app.get('/registro', function (req, res) {
+    res.sendFile(__dirname + "/public/views/registro2.html");
 })
 
 app.post("/", (req, res) => {
@@ -71,6 +78,39 @@ app.post("/", (req, res) => {
         conexion.con.end();
     });
 })
+
+app.post("/registro", (req, res) => {
+    let conexion = new Conexion();
+    let pass = crypto.createHash('md5').update(req.body.password).digest("hex");
+    let EDFile = req.files.perfil;
+    EDFile.name = req.body.username;
+
+    let registro = "INSERT INTO usuarios (username, password, imagen, nombre) VALUES ($1, $2, $3, $4)";
+    conexion.con.query(registro, [req.body.username, pass, EDFile.name, req.body.nombre], (error, results) => {
+        if (error) {
+            fs.readFile("./public/views/registro2.html", (err, data) => {
+                data = data.toString().trim().replace("##err##", error.message);
+                res.send(data);
+                return;
+            })
+        } else {
+            if (results.rowCount > 0) {
+                res.redirect("/");
+            } else {
+                fs.readFile("./public/views/registro2.html", (err, data) => {
+                    data = data.toString().trim().replace("##err##", error.message);
+                    res.send(data);
+                    return;
+                })
+            }
+        }
+    })
+
+    EDFile.mv(`./public/img/${EDFile.name}.jpg`, err => {
+        if(err) return res.status(500).send({message : err})
+    })
+})
+
 app.get("/desconectar", (req, res) => {
     req.session.destroy();
     res.redirect("/");

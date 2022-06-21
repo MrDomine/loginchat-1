@@ -73,3 +73,8 @@ body {
     width: 95%;
     margin: 3vh  !important;
 }
+
+#formFileLg{
+    width:85% !important; 
+    margin: 0 auto;
+}

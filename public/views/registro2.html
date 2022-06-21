@@ -9,39 +9,42 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="./js/index2.js"></script>
-    <title>Login</title>
+    <title>Registro</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/login.css">
 </head>
 
 <body>
-    
+
     <div class="wrapper fadeInDown">
-        <h1 class="fadeIn first">LogIn</h1>
+        <h1 class="fadeIn first">Registro</h1>
         <div id="formContent">
             <!-- Tabs Titles -->
 
             <!-- Login Form -->
-            <form action="" method="post">
-                <label for="" class="fadeIn second">Username</label>
+            <form action="" method="post" enctype="multipart/form-data">
+                <label for="" class="fadeIn second">Nombre</label>
+                <input type="text" class="fadeIn second" name="nombre" id="nombre">
+                <label for="" class="fadeIn second">Usuario</label>
                 <input type="text" class="fadeIn second" name="username" id="login">
-                <label for="" class="fadeIn third">Password</label>
+                <label for="" class="fadeIn third">Contraseña</label>
                 <input type="password" class="fadeIn third" name="password" id="password">
-                <input type="submit" class="fadeIn fourth" value="Enviar">
+                <label for="" class="fadeIn third">Repetir Contraseña</label>
+                <input type="password" class="fadeIn third" name="repassword" id="repassword">
+                <label for="formFileLg" class="form-label fadeIn fourth">Imagen Perfil</label>
+                <input class="form-control form-control-lg fadeIn fourth" id="formFileLg" type="file" name="perfil">
+                <input type="submit" class="fadeIn fourth" id="enviar" value="Enviar">
             </form>
             <span id="error">##err##</span>
 
             <!-- Remind Passowrd -->
             <div id="formFooter">
-                <a class="underlineHover" href="#">Forgot Password?</a>
-                <br>
-                <a class="underlineHover" href="/registro">Registrate</a>
+                <div class="border-top card-body text-center">Tienes una cuenta? <a href="/">Logueate</a></div>
             </div>
-            
+
         </div>
     </div>
-    
+
 </body>
 
 </html>
-
