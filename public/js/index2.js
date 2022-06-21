@@ -14,6 +14,7 @@ function comprobarPass() {
   let repass = $("#repassword");
   let nombre = $("#nombre");
   let usuario = $("#usuario");
+  let img = $("#formFileLg");
 
   if(nombre.val() == ""){
     nombre.css("border", "2px solid red");
@@ -34,5 +35,9 @@ function comprobarPass() {
   if(pass.val() != repass.val()){
     pass.css("border", "2px solid red");
     repass.css("border", "2px solid red");
+  }
+
+  if(img.val() == ""){
+    img.css("border", "2px solid red");
   }
 }

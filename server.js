@@ -85,6 +85,7 @@ app.post("/registro", (req, res) => {
     let EDFile = req.files.perfil;
     EDFile.name = req.body.username;
 
+
     let registro = "INSERT INTO usuarios (username, password, imagen, nombre) VALUES ($1, $2, $3, $4)";
     conexion.con.query(registro, [req.body.username, pass, EDFile.name, req.body.nombre], (error, results) => {
         if (error) {
@@ -103,11 +104,11 @@ app.post("/registro", (req, res) => {
                     return;
                 })
             }
-        }
-    })
 
-    EDFile.mv(`./public/img/${EDFile.name}.jpg`, err => {
-        if (err) return res.status(500).send({ message: err })
+            EDFile.mv(`./public/img/${EDFile.name}.jpg`, err => {
+                if (err) return res.status(500).send({ message: err })
+            })
+        }
     })
     conexion.con.end();
 })
@@ -167,13 +168,19 @@ io.on('connection', (socket) => {
         console.log(reason);
         let mensaje = socket.request.session.user.nombre + ":" + reason
         let usuario = socket.request.session.user.nombre;
+        let imagen = socket.request.session.user.imagen;
+
+        if (imagen == null) {
+            imagen = "default.jpg";
+        }
+
         for (let i = 0; i < usuarioOnline.length; i++) {
             if (usuarioOnline[i].nombre == usuario) {
                 usuarioOnline.splice(i, 1);
             }
         }
         io.emit("usuarios", usuarioOnline);
-        io.emit("chat", { from: usuario, message: reason });
+        io.emit("chat", { from: usuario, message: reason, imagen: `/img/${imagen}` });
 
     });
 
