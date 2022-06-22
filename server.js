@@ -10,6 +10,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+var moment = require('moment');
 
 var usuarioOnline = [];
 var users = {};
@@ -62,7 +63,7 @@ app.post("/", (req, res) => {
         } else {
             if (results.rowCount > 0) {
                 req.session.user = results.rows[0];
-                usuarioOnline.push({ nombre: req.session.user.nombre, imagen: req.session.user.imagen });
+                usuarioOnline.push({ nombre: req.session.user.nombre, imagen: req.session.user.imagen, hora: moment().format('LT') });
                 fs.readFile(__dirname + "/index2.html", (err, data) => {
                     data = data.toString().trim().replace("{{user}}", req.session.user.nombre).replace("{{img}}", `img/${req.session.user.imagen == null ? 'default' : req.session.user.imagen}.jpg`);
                     res.send(data);

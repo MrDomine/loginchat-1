@@ -8,7 +8,7 @@ const template_usuario = `<div class="row sideBar-body classUser">
 <div class="col-sm-9 col-xs-9 sideBar-main">
   <div class="row">
     <div class="col-sm-8 col-xs-8 sideBar-name">
-      <span class="name-meta">{{user}}
+      <span class="name-meta nameUser">{{user}}
     </span>
     </div>
     <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
@@ -40,6 +40,8 @@ window.onload = () => {
     let emojis = { ":-)": "0x1F600", ":-|": "0x1F604" };
     var socket = io();
 
+    $(".dropdown-toggle").dropdown();
+
     var form = document.getElementById('form');
     var input = document.getElementById('input');
     /*
@@ -66,7 +68,7 @@ window.onload = () => {
 
         let date = new Date();
         let hora = String(date.getHours()).padStart(2, "0") + ":" + String(date.getMinutes()).padStart(2, "0") + ":" + String(date.getSeconds()).padStart(2, "0");
-        document.getElementById("conversation").innerHTML += template_msg.replace("{{msg}}", mensaje).replaceAll("{{origen}}", sender).replace("{{hora}}", hora).replace("{{img}}",msg.imagen);
+        document.getElementById("conversation").innerHTML += template_msg.replace("{{msg}}", mensaje).replaceAll("{{origen}}", sender).replace("{{hora}}", hora).replace("{{img}}", msg.imagen);
         document.getElementById("conversation").scrollTo(0, document.getElementById("conversation").scrollHeight);
     });
 
@@ -78,7 +80,7 @@ window.onload = () => {
         let liUsuarios = "";
         for (const user of users) {
             if (user.nombre != usuario)
-                liUsuarios += template_usuario.replace("{{user}}", user.nombre).replace("{{hora_conexion}}", "18:00").replace("{{img}}", `img/${user.imagen == null ? 'default' : user.imagen}.jpg`);
+                liUsuarios += template_usuario.replace("{{user}}", user.nombre).replace("{{hora_conexion}}", user.hora).replace("{{img}}", `img/${user.imagen == null ? 'default' : user.imagen}.jpg`);
         }
         document.getElementById("usuarios").innerHTML = liUsuarios;
         let lis = document.getElementsByClassName("classUser");
@@ -117,4 +119,21 @@ window.onload = () => {
             }
         }
     }
+
+    $("#searchText").keyup(function () {
+        let nombres = $(".nameUser");
+        let buscando = $(this).val();
+        let item = "";
+        for (let i = 0; i < nombres.length; i++) {
+            item = $(nombres[i]).html().toLowerCase();
+
+            if (buscando.length == 0 || item.indexOf(buscando) > -1) {
+                $(nombres[i]).parents(".classUser").show();
+            } else {
+                $(nombres[i]).parents(".classUser").hide();
+            }
+
+
+        }
+    })
 }
