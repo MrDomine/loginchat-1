@@ -1,4 +1,6 @@
 var emojis = { ":-)": "0x1F600", ":-|": "0x1F604" };
+var mediaRecorder;
+var audios = {};
 const template_usuario = `<div class="row sideBar-body classUser">
 <div class="col-sm-3 col-xs-3 sideBar-avatar">
   <div class="avatar-icon">
@@ -37,10 +39,38 @@ const template_msg = `<div class="row message-body">
 
 const template_emoji = `<li><span class="dropdown-item emoji"></span></li>`;
 
+const template_audio = `<div class="row message-body">
+<div class="col-sm-12 message-main-receiver">
+    
+    <div class="receiver">
+        <div class="avatar-icon">
+            <img src="{{img}}"><span class="user-msg">{{user}}</span>
+        </div>
+        Nuevo audio: <a href="" class="message-audio" id="audio-{{audio}}">escuchar     
+        </a>
+        <span class="message-time pull-right">
+            {{hora}}
+        </span>
+    </div>
+</div>
+</div>`;
+
 window.onload = () => {
     let usuario = document.getElementById("usuario").innerText;
     let emojis = { ":-)": "0x1F600", ":-|": "0x1F604" };
     var socket = io();
+    var constraints = { audio: true };
+
+
+    $("#microphone").click(() => {
+        // Start recording
+        mediaRecorder.start();
+
+        // Stop recording after 5 seconds and broadcast it to server
+        setTimeout(function () {
+            mediaRecorder.stop()
+        }, 5000);
+    })
 
     $(".dropdown-toggle").dropdown();
 
@@ -72,6 +102,26 @@ window.onload = () => {
         let hora = String(date.getHours()).padStart(2, "0") + ":" + String(date.getMinutes()).padStart(2, "0") + ":" + String(date.getSeconds()).padStart(2, "0");
         document.getElementById("conversation").innerHTML += template_msg.replace("{{msg}}", mensaje).replaceAll("{{origen}}", sender).replace("{{hora}}", hora).replace("{{img}}", msg.imagen);
         document.getElementById("conversation").scrollTo(0, document.getElementById("conversation").scrollHeight);
+    });
+
+    socket.on('radio', function (msg) {
+
+        console.log("reproduciendo audio")
+        let date = new Date();
+        let hora = String(date.getHours()).padStart(2, "0") + ":" + String(date.getMinutes()).padStart(2, "0") + ":" + String(date.getSeconds()).padStart(2, "0");
+        document.getElementById("conversation").innerHTML += template_audio.replace("{{audio}}", msg.from + "-" + hora.replaceAll(":", "-")).replace("{{hora}}", hora).replace("{{img}}", msg.imagen).replace("{{user}}", msg.from);
+        var blob = new Blob([msg.message], { 'type': 'audio/ogg; codecs=opus' });
+        let clave = "audio-" + msg.from + "-" + hora.replaceAll(":", "-");
+        audios[clave] = blob;
+        clave = "#" + clave;
+        $(clave).click((e) => {
+            e.preventDefault();
+            let idclave = e.currentTarget.id;
+            var audio = document.createElement('audio');
+            audio.src = window.URL.createObjectURL(audios[idclave]);
+            audio.play();
+        })
+
     });
 
     socket.on(usuario, (msg) => {
@@ -151,4 +201,21 @@ window.onload = () => {
             $("#input").val($(e.currentTarget).text());
         })
     })
+
+    navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+        mediaRecorder = new MediaRecorder(mediaStream);
+        mediaRecorder.onstart = function (e) {
+            this.chunks = [];
+        };
+        mediaRecorder.ondataavailable = function (e) {
+            this.chunks.push(e.data);
+        };
+        mediaRecorder.onstop = function (e) {
+            var blob = new Blob(this.chunks, { 'type': 'audio/ogg; codecs=opus' });
+            socket.emit('radio', { from: usuario, message: blob, imagen: $("#imgAvatar").attr("src") });
+            console.log("Enviando audio")
+        };
+
+
+    });
 }

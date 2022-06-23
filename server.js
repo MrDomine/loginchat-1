@@ -176,6 +176,12 @@ io.on('connection', (socket) => {
 
     });
 
+    socket.on("radio",(blob)=>{
+        //socket.broadcast.emit("chat",{ from: socket.request.session.user.nombre, message: "Nuevo audio", imagen: `img/${socket.request.session.user.imagen}` })
+        socket.broadcast.emit("radio",blob)
+        console.log("emitiendo audio desde el servidor")
+    })
+
     socket.on("disconnect", (reason) => {
         console.log(reason);
         let mensaje = socket.request.session.user.nombre + ": " + reason
