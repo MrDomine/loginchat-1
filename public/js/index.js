@@ -35,6 +35,8 @@ const template_msg = `<div class="row message-body">
 </div>
 </div>`;
 
+const template_emoji = `<li><span class="dropdown-item emoji"></span></li>`;
+
 window.onload = () => {
     let usuario = document.getElementById("usuario").innerText;
     let emojis = { ":-)": "0x1F600", ":-|": "0x1F604" };
@@ -135,5 +137,18 @@ window.onload = () => {
 
 
         }
+    })
+
+    $(".reply-emojis").click(function () {
+        let todoEmoji = "";
+        for (const key in emojis) {
+            if (Object.hasOwnProperty.call(emojis, key)) {
+                todoEmoji += `<li><span class="dropdown-item emoji">${String.fromCodePoint(emojis[key])}</span></li>`;
+            }
+        }
+        $(".listaEmojis").html(todoEmoji);
+        $(".emoji").click(function (e) {
+            $("#input").val($(e.currentTarget).text());
+        })
     })
 }

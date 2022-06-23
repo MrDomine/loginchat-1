@@ -115,6 +115,17 @@ app.post("/registro", (req, res) => {
 })
 
 app.get("/desconectar", (req, res) => {
+    let imagen = req.session.user.imagen+".jpg";
+    if (imagen == null) {
+        imagen = "default.jpg";
+    }
+    for (let i = 0; i < usuarioOnline.length; i++) {
+        if (usuarioOnline[i].nombre == req.session.user.nombre) {
+            usuarioOnline.splice(i, 1);
+        }
+    }
+    io.emit("chat", { from: req.session.user.nombre, message: " ha abandonado el chat.", imagen: "img/"+imagen });
+    io.emit("usuarios", usuarioOnline);
     req.session.destroy();
     res.redirect("/");
 })
@@ -167,22 +178,16 @@ io.on('connection', (socket) => {
 
     socket.on("disconnect", (reason) => {
         console.log(reason);
-        let mensaje = socket.request.session.user.nombre + ":" + reason
+        let mensaje = socket.request.session.user.nombre + ": " + reason
         let usuario = socket.request.session.user.nombre;
         let imagen = socket.request.session.user.imagen;
-
-        if (imagen == null) {
-            imagen = "default.jpg";
-        }
-
         for (let i = 0; i < usuarioOnline.length; i++) {
             if (usuarioOnline[i].nombre == usuario) {
                 usuarioOnline.splice(i, 1);
             }
         }
-        io.emit("usuarios", usuarioOnline);
-        io.emit("chat", { from: usuario, message: reason, imagen: `/img/${imagen}` });
 
+        
     });
 
 
